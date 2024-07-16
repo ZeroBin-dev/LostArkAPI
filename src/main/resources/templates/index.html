@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{layout/fragments/head.html :: headFragment}"/>
+<body>
+<main>
+  <div class="search-container">
+    <label for="sort">정렬:</label>
+    <select id="sort">
+      <option value="GRADE">등급</option>
+      <option value="CURRENT_MIN_PRICE">최저가</option>
+      <option value="RECENT_PRICE" selected>최근판매가</option>
+      <option value="YDAY_AVG_PRICE">전일평균가</option>
+    </select>
+
+    <label for="categoryCode">카테고리 선택:</label>
+    <select id="categoryCode">
+      <option value="">전체</option>
+      <option value="10100">장비 상자 전체</option>
+      <option value="20005">아바타 > 무기</option>
+      <option value="20010">아바타 > 머리</option>
+      <option value="20020">아바타 > 얼굴1</option>
+      <option value="20030">아바타 > 얼굴2</option>
+      <option value="20050">아바타 > 상의</option>
+      <option value="20060">아바타 > 하의</option>
+      <option value="20070">아바타 > 상하의 세트</option>
+      <option value="21400">아바타 > 악기</option>
+      <option value="21500">아바타 > 아바타 상자</option>
+      <option value="21600">아바타 > 이동 효과</option>
+      <option value="20000">아바타 전체</option>
+      <option value="40000">각인서 전체</option>
+      <option value="50010">강화 재료 > 재련 재료</option>
+      <option value="50020">강화 재료 > 재련 추가 재료</option>
+      <option value="51000">강화 재료 > 기타 재료</option>
+      <option value="51100">강화 재료 > 무기 진화 재료</option>
+      <option value="50000" selected>강화 재료 전체</option>
+      <option value="60200">전투 용품 > 배틀 아이템 -회복형</option>
+      <option value="60300">전투 용품 > 배틀 아이템 -공격형</option>
+      <option value="60400">전투 용품 > 배틀 아이템 -기능성</option>
+      <option value="60500">전투 용품 > 배틀 아이템 -버프형</option>
+      <option value="60000">전투 용품 전체</option>
+      <option value="70000">요리 전체</option>
+      <option value="90200">생활 > 식물채집 전리품</option>
+      <option value="90300">생활 > 벌목 전리품</option>
+      <option value="90400">생활 > 채광 전리품</option>
+      <option value="90500">생활 > 수렵 전리품</option>
+      <option value="90600">생활 > 낚시 전리품</option>
+      <option value="90700">생활 > 고고학 전리품</option>
+      <option value="90800">생활 > 기타</option>
+      <option value="90000">생활 전체</option>
+      <option value="100000">모험의 서</option>
+      <option value="110100">항해 > 선박 재료</option>
+      <option value="110110">항해 > 선박 스킨</option>
+      <option value="111900">항해 > 선박 재료 상자</option>
+      <option value="110000">항해 전체</option>
+      <option value="140100">펫 > 펫</option>
+      <option value="140200">펫 > 펫 상자</option>
+      <option value="140000">펫 전체</option>
+      <option value="160100">탈것 > 탈것</option>
+      <option value="160200">탈것 > 탈것 상자</option>
+      <option value="160000">탈것 전체</option>
+      <option value="170000">기타</option>
+      <option value="220000">보석 상자</option>
+    </select>
+
+    <label for="itemName">아이템 이름:</label>
+    <input type="text" id="itemName" placeholder="아이템 이름 입력" value="오레하">
+
+    <label for="sortCondition">정렬 조건:</label>
+    <select id="sortCondition">
+      <option value="ASC">오름차순</option>
+      <option value="DESC" selected>내림차순</option>
+    </select>
+
+    <button onclick="searchMarket()">검색</button>
+  </div>
+
+  <div id="pagination">
+    <span id="pageInfo">페이지 1 / 전체 페이지 0</span>
+    <button class="hide" id="prevBtn" onclick="prevPage()">이전</button>
+    <button class="hide" id="nextBtn" onclick="nextPage()">다음</button>
+  </div>
+
+  <table id="resultsTable">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>이름</th>
+      <th>등급</th>
+      <th>아이콘</th>
+      <th>묶음 수</th>
+      <th>전일 평균 가격</th>
+      <th>최근 가격</th>
+      <th>현재 최소 가격</th>
+    </tr>
+    </thead>
+    <tbody id="results">
+    </tbody>
+  </table>
+
+  <!-- 모달 창 -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <div id="modalResults">
+        <!-- 상세 정보가 여기에 표시됩니다 -->
+      </div>
+    </div>
+  </div>
+</main>
+<script th:inline="javascript">
+  let currentPage = 1;
+  let pageSize = 10; // 페이지당 보여주는 개수
+
+  function searchMarket() {
+    currentPage = 1; // 검색을 시작할 때 페이지 초기화
+
+    let data = {
+      sort: document.getElementById('sort').value,
+      categoryCode: document.getElementById('categoryCode').value,
+      itemName: document.getElementById('itemName').value,
+      pageNo: currentPage,
+      pageSize: pageSize,
+      sortCondition: document.getElementById('sortCondition').value
+    }
+
+    postApi('/api/market/search', data, onSearchMarketSuccess, onApiError);
+  }
+
+  function onSearchMarketSuccess(data) {
+    const results = document.getElementById('results');
+    results.innerHTML = ''; // 기존 결과 초기화
+
+    data.Items.forEach(item => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td class="cursor" onclick="searchDetail('${item.Id}')">${item.Id}</td>
+        <td>${item.Name}</td>
+        <td>${item.Grade}</td>
+        <td><img src="${item.Icon}" alt="${item.Name} 아이콘"></td>
+        <td>${item.BundleCount}</td>
+        <td>${item.YDayAvgPrice}</td>
+        <td>${item.RecentPrice}</td>
+        <td>${item.CurrentMinPrice}</td>
+      `;
+      results.appendChild(row);
+    });
+
+    updatePage(data.PageNo, data.TotalCount);
+  }
+
+  function searchDetail(itemId) {
+    let data = {
+      itemId: itemId
+    }
+
+    postApi('/api/market/detail', data, onSearchDetailSuccess, onApiError);
+  }
+
+  function onSearchDetailSuccess(data) {
+    const modalResults = document.getElementById('modalResults');
+    modalResults.innerHTML = ''; // 기존 결과 초기화
+
+    const item = data;
+    const content = `
+        <h2>${item.Name}</h2>
+        <h3>Stats</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Avg Price</th>
+                    <th>Trade Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${item.Stats.map(stat => `
+                    <tr>
+                        <td>${stat.Date}</td>
+                        <td>${stat.AvgPrice}</td>
+                        <td>${stat.TradeCount}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+    modalResults.innerHTML = content;
+
+    openModal();
+  }
+
+  /**
+   * 페이징 처리
+   */
+  function updatePage(pageNo, totalCount) {
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    if (pageNo > 1) {
+      prevBtn.style.display = 'inline-block';
+      prevBtn.disabled = false;
+    } else {
+      prevBtn.style.display = 'none';
+      prevBtn.disabled = true;
+    }
+
+    if (pageNo * pageSize < totalCount) {
+      nextBtn.style.display = 'inline-block';
+      nextBtn.disabled = false;
+    } else {
+      nextBtn.style.display = 'none';
+      nextBtn.disabled = true;
+    }
+
+    const pageInfo = document.getElementById('pageInfo');
+    const totalPages = Math.ceil(totalCount / pageSize);
+    pageInfo.textContent = `페이지 ${pageNo} / 전체 페이지 ${totalPages}`;
+  }
+
+  function prevPage() {
+    if (currentPage > 1) {
+      currentPage--;
+      fetchResults();
+    }
+  }
+
+  function nextPage() {
+    currentPage++;
+    fetchResults();
+  }
+
+</script>
+</body>
+</html>
