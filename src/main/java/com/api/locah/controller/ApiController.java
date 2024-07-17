@@ -1,9 +1,6 @@
 package com.api.locah.controller;
 
-import com.api.locah.controller.dto.MarketDetailReq;
-import com.api.locah.controller.dto.MarketDetailRes;
-import com.api.locah.controller.dto.MarketSearchReq;
-import com.api.locah.controller.dto.MarketSearchRes;
+import com.api.locah.controller.dto.*;
 import com.api.locah.service.ApiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +35,10 @@ public class ApiController {
   /**
    * 캐릭터 기본정보 조회
    */
+  @PostMapping("/character/search")
+  public ResponseEntity<CharacterRes> characterSearch(@RequestBody CharacterReq params){
+    return _apiService.characterSearch(params);
+  }
 
 
 }

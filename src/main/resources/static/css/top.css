@@ -1,0 +1,22 @@
+.tab {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+.tab button {
+    background-color: #4CAF50;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 10px 20px;
+    transition: background-color 0.3s, color 0.3s;
+    font-size: 16px;
+    color: white;
+}
+.tab button:hover {
+    background-color: #45a049;
+}
+.tab button.active {
+    background-color: #2E7D32;
+    color: yellow;
+}

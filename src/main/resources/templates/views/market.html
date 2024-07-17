@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<th:block th:replace="~{layout/fragments/head.html :: headFragment}"/>
+<th:block th:replace="~{fragments/head.html :: headFragment}"/>
 <body>
+<th:block th:replace="~{fragments/top.html :: topFragment}"/>
 <main>
   <div class="search-container">
     <label for="sort">정렬:</label>
@@ -63,7 +64,7 @@
     </select>
 
     <label for="itemName">아이템 이름:</label>
-    <input type="text" id="itemName" placeholder="아이템 이름 입력" value="오레하">
+    <input type="text" id="itemName" placeholder="아이템 이름 입력" value="오레하" onkeydown="javascript: if(event.keyCode==13){ searchMarket(); return false; }">
 
     <label for="sortCondition">정렬 조건:</label>
     <select id="sortCondition">

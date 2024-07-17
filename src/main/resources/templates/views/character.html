@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{fragments/head.html :: headFragment}"/>
+<body>
+<th:block th:replace="~{fragments/top.html :: topFragment}"/>
+<main>
+  <div class="search-container">
+    <label for="characterName">캐릭터 이름:</label>
+    <input type="text" id="characterName" placeholder="캐릭터 이름 입력" onkeydown="javascript: if(event.keyCode==13){ searchCharacters(); return false; }">
+    <button onclick="searchCharacters()">검색</button>
+  </div>
+
+  <div id="characterList" class="character-list"></div>
+</main>
+<script th:inline="javascript">
+  function searchCharacters() {
+    let characterName = document.getElementById('characterName').value;
+    let data = { characterName: characterName };
+
+    postApi('/api/character/search', data, onSearchCharactersSuccess, onApiError);
+  }
+
+  function onSearchCharactersSuccess(data) {
+    const characterList = document.getElementById('characterList');
+    characterList.innerHTML = '';
+
+    data.characterInfo.forEach((character, index) => {
+      const characterDiv = document.createElement('div');
+      characterDiv.className = 'character';
+
+      var profileCheck = character.armoryProfile;
+
+      if(profileCheck){
+        characterDiv.innerHTML = `
+        <div class="accordion" onclick="toggleAccordion(${index})">
+          <h3>${character.CharacterName} (${character.CharacterClassName})</h3>
+        </div>
+        <div class="panel" id="panel${index}">
+          <img class="profile-img" src="${character.armoryProfile.CharacterImage}" alt="${character.armoryProfile.CharacterName} 이미지">
+          <p><strong>서버:</strong> ${character.ServerName}</p>
+          <p><strong>아이템 레벨:</strong> ${character.ItemAvgLevel}</p>
+          <p><strong>캐릭터 레벨:</strong> ${character.CharacterLevel}</p>
+          <p><strong>원정대 레벨:</strong> ${character.armoryProfile.ExpeditionLevel}</p>
+        </div>
+      `;
+      } else {
+        characterDiv.innerHTML = `
+        <div class="accordion" onclick="toggleAccordion(${index})">
+          <h3>${character.CharacterName} (${character.CharacterClassName})</h3>
+        </div>
+        <div class="panel" id="panel${index}">
+          <img class="profile-img" src="/images/default.png" alt="이미지">
+          <p><strong>서버:</strong> ${character.ServerName}</p>
+          <p><strong>아이템 레벨:</strong> ${character.ItemAvgLevel}</p>
+          <p><strong>캐릭터 레벨:</strong> ${character.CharacterLevel}</p>
+        </div>
+      `;
+      }
+
+      characterList.appendChild(characterDiv);
+    });
+  }
+
+  function toggleAccordion(index) {
+    const panel = document.getElementById(`panel${index}`);
+    panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+  }
+
+</script>
+</body>
+</html>
