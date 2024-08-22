@@ -11,25 +11,11 @@ server:
   servlet:
     encoding:
       charset: UTF-8
+  undertow:
+    threads:
+      io: 4
+      worker: 20
 
 loa:
-  apiKey: #발급받은API키#
+  apiKey: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IktYMk40TkRDSTJ5NTA5NWpjTWk5TllqY2lyZyIsImtpZCI6IktYMk40TkRDSTJ5NTA5NWpjTWk5TllqY2lyZyJ9.eyJpc3MiOiJodHRwczovL2x1ZHkuZ2FtZS5vbnN0b3ZlLmNvbSIsImF1ZCI6Imh0dHBzOi8vbHVkeS5nYW1lLm9uc3RvdmUuY29tL3Jlc291cmNlcyIsImNsaWVudF9pZCI6IjEwMDAwMDAwMDA1Mzk0OTgifQ.JxV4eaceodAdGMCTu8bq6xHS0hzpR_ZNj07wZQDJnxXs6byG9jUI-j0ltIrbrjRXTH7LvjIJQPMxA4vaEoBHi_LG6mjiZxUVs-GNo-f7Dn9OR55tGnXmT2X1jzA3GhsIkrGi01L3R8xRYB0bZ0V0zpNKGpLhvYGOKDQSz0N4bNxzTt9e-W_hnzpgmibrIGaF9u0UuA4rDq6u_455AlvEqpHriUG0my3hVPMOcYayOGwBcdo9Vwc4Zdd_bkze_1jZIy35e4THPWJzV2ciPbUWLqAMS3kKh6eNh5Ii6PGFf8cJPgh9YvbDX7NNJK5vOFTvkGEF_MxgvCEhy7lyoq-wPg
   apiUrl: https://developer-lostark.game.onstove.com
----
-spring:
-  config:
-    activate:
-      on-profile: "local"
-
-  log:
-    file-path: D:\logs\loa\loa.log
-
-
----
-spring:
-  config:
-    activate:
-      on-profile: "prod"
-
-  log:
-    file-path: /dudqls3kr/logs/loa/loa.log

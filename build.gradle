@@ -36,12 +36,17 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-    // util
-
-
-
+    // undertow
+    implementation 'org.springframework.boot:spring-boot-starter-undertow'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+configurations {
+    configureEach {
+        // was tomcat 제외
+        exclude module: 'spring-boot-starter-tomcat'
+    }
 }
